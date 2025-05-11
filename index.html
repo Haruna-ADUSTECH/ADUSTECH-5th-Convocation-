@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5th Convocation - ADUSTECH Wudil</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffffff 50%, #008000 50%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #008000;
+            margin: 0;
+        }
+        
+        .subtitle {
+            color: #555;
+            font-style: italic;
+        }
+        
+        .album-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .flipbook {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            perspective: 1500px;
+        }
+        
+        .page {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transform-origin: left center;
+            transition: transform 1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        
+        .page img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .page-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #008000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #006600;
+        }
+        
+        .page-number {
+            display: inline-block;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .flipbook {
+                height: 400px;
+            }
+            
+            .page-content {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>5th Convocation Ceremony</h1>
+        <div class="subtitle">Aliko Dangote University of Science and Technology, Wudil, Kano State, Nigeria</div>
+    </div>
+    
+    <div class="album-container">
+        <div class="flipbook" id="flipbook">
+            <!-- Cover Page -->
+            <div class="page" style="background-color: #008000; color: white; justify-content: center;">
+                <div class="page-content">
+                    <h1 style="color: white;">5th Convocation</h1>
+                    <h2>Aliko Dangote University of Science and Technology</h2>
+                    <p>Wudil, Kano State, Nigeria</p>
+                    <p>Digital Photo Album</p>
+                    <div style="margin-top: 30px; font-size: 14px;">Flip through to view 199 memorable moments</div>
+                </div>
+            </div>
+            
+            <!-- Pages will be dynamically inserted here -->
+        </div>
+        
+        <div class="controls">
+            <button id="prev-btn">Previous</button>
+            <span class="page-number">Page <span id="current-page">1</span> of <span id="total-pages">100</span></span>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const totalImages = 199;
+        const imagesPerPage = 2; // 2 images per spread (1 per page)
+        const totalPages = Math.ceil(totalImages / imagesPerPage) + 1; // +1 for cover
+        
+        // Image paths - in a real scenario, these would be actual paths to your images
+        // For this example, we'll use placeholder URLs
+        const imagePaths = [];
+        for (let i = 1; i <= totalImages; i++) {
+            // Replace this with your actual image paths
+            imagePaths.push(`photos/convocation_${i}.jpg`);
+        }
+        
+        // Initialize the flipbook
+        const flipbook = document.getElementById('flipbook');
+        const currentPageEl = document.getElementById('current-page');
+        const totalPagesEl = document.getElementById('total-pages');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        let currentPage = 0;
+        const pages = [];
+        
+        // Create pages
+        function createPages() {
+            // Skip cover page (already in HTML)
+            
+            // Create content pages
+            for (let i = 0; i < totalImages; i += imagesPerPage) {
+                const page = document.createElement('div');
+                page.className = 'page';
+                
+                // Create a spread with 2 images (left and right pages)
+                const pageContent = document.createElement('div');
+                pageContent.className = 'page-content';
+                
+                // First image
+                if (imagePaths[i]) {
+                    const img1 = document.createElement('img');
+                    img1.src = imagePaths[i];
+                    img1.alt = `Convocation photo ${i+1}`;
+                    pageContent.appendChild(img1);
+                }
+                
+                // Second image (if exists)
+                if (imagePaths[i+1]) {
+                    const img2 = document.createElement('img');
+                    img2.src = imagePaths[i+1];
+                    img2.alt = `Convocation photo ${i+2}`;
+                    pageContent.appendChild(img2);
+                }
+                
+                page.appendChild(pageContent);
+                flipbook.appendChild(page);
+                pages.push(page);
+            }
+            
+            // Add back cover
+            const backCover = document.createElement('div');
+            backCover.className = 'page';
+            backCover.style.backgroundColor = '#008000';
+            backCover.style.color = 'white';
+            backCover.style.justifyContent = 'center';
+            
+            const backCoverContent = document.createElement('div');
+            backCoverContent.className = 'page-content';
+            backCoverContent.innerHTML = `
+                <h1 style="color: white;">Congratulations Graduates!</h1>
+                <p>Class of 2023</p>
+                <p>Aliko Dangote University of Science and Technology</p>
+                <div style="margin-top: 50px; font-size: 12px;">
+                    <p>5th Convocation Ceremony</p>
+                    <p>Wudil, Kano State, Nigeria</p>
+                </div>
+            `;
+            
+            backCover.appendChild(backCoverContent);
+            flipbook.appendChild(backCover);
+            pages.push(backCover);
+            
+            totalPagesEl.textContent = pages.length;
+        }
+        
+        // Update page display
+        function updatePages() {
+            // Hide all pages
+            pages.forEach((page, index) => {
+                if (index === currentPage) {
+                    page.style.display = 'flex';
+                    page.style.transform = 'rotateY(0deg)';
+                    page.style.zIndex = '10';
+                } else if (index === currentPage - 1) {
+                    page.style.display = 'flex';
+                    page.style.transform = 'rotateY(-180deg)';
+                    page.style.zIndex = '9';
+                } else {
+                    page.style.display = 'none';
+                }
+            });
+            
+            currentPageEl.textContent = currentPage + 1;
+            
+            // Update button states
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === pages.length - 1;
+        }
+        
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePages();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                updatePages();
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            }
+        });
+        
+        // Initialize
+        createPages();
+        updatePages();
+        
+        // In a real implementation, you would need to:
+        // 1. Replace the placeholder image paths with actual paths to your 199 photos
+        // 2. Host this on a web server (the images won't load properly with just file://)
+        // 3. Optionally add more features like thumbnail navigation, fullscreen mode, etc.
+    </script>
+</body>
+</html>
